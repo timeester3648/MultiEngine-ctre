@@ -20,3 +20,9 @@ tests/benchmark-range/*
 build
 cmake-build-*/*
 .idea/*
+
+# exclude project files
+**.sln
+**.vcxproj
+**.vcxproj.user
+**.vcxproj.filters
