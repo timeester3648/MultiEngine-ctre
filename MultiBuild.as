@@ -2,7 +2,7 @@ void main(MultiBuild::Workspace& workspace) {
 	auto project = workspace.create_project(".");
 	auto properties = project.properties();
 
-	properties.name("ctre");
+	project.name("ctre");
 	properties.binary_object_kind(MultiBuild::BinaryObjectKind::eNone);
 	project.license("./LICENSE");
 
