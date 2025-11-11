@@ -1,7 +1,7 @@
 #ifndef CTRE__UTF8__HPP
 #define CTRE__UTF8__HPP
 
-#if __cpp_char8_t >= 201811
+#if defined(__cpp_char8_t) && __cpp_char8_t >= 201811
 
 #include "utility.hpp"
 #ifndef CTRE_IN_A_MODULE
@@ -9,7 +9,7 @@
 #include <iterator>
 #endif
 
-#if __cpp_lib_char8_t >= 201811L
+#if defined(__cpp_char8_t) &&__cpp_lib_char8_t >= 201811L
 #define CTRE_ENABLE_UTF8_RANGE
 #endif
 
@@ -43,12 +43,11 @@ struct utf8_iterator {
 		friend constexpr auto operator==(self_type, const char8_t * other_ptr) noexcept {
 			return *other_ptr == char8_t{0};
 		}
-		
+#if !defined(__cpp_impl_three_way_comparison) || __cpp_impl_three_way_comparison < 201907L		
 		friend constexpr auto operator!=(self_type, const char8_t * other_ptr) noexcept {
 			return *other_ptr != char8_t{0};
 		}
 		
-#if __cpp_impl_three_way_comparison < 201907L
 		friend constexpr auto operator==(const char8_t * other_ptr, self_type) noexcept {
 			return *other_ptr == char8_t{0};
 		}
@@ -61,7 +60,7 @@ struct utf8_iterator {
 	
 	const char8_t * ptr{nullptr};
 	const char8_t * end{nullptr};
-	
+#if !defined(__cpp_impl_three_way_comparison) || __cpp_impl_three_way_comparison < 201907L
 	constexpr friend bool operator!=(const utf8_iterator & lhs, sentinel) {
 		return lhs.ptr < lhs.end;
 	}
@@ -73,7 +72,7 @@ struct utf8_iterator {
 	constexpr friend bool operator!=(const utf8_iterator & lhs, const utf8_iterator & rhs) {
 		return lhs.ptr != rhs.ptr;
 	}
-	
+#endif	
 	constexpr friend bool operator==(const utf8_iterator & lhs, sentinel) {
 		return lhs.ptr >= lhs.end;
 	}
@@ -86,7 +85,7 @@ struct utf8_iterator {
 		return lhs.ptr == rhs.ptr;
 	}
 	
-#if __cpp_impl_three_way_comparison < 201907L
+#if !defined(__cpp_impl_three_way_comparison) || __cpp_impl_three_way_comparison < 201907L
 	constexpr friend bool operator!=(sentinel, const utf8_iterator & rhs) {
 		return rhs.ptr < rhs.end;
 	}
@@ -175,7 +174,7 @@ struct utf8_iterator {
 		
 		// quickpath
 		if (!(*ptr & 0b1000'0000u)) CTRE_LIKELY {
-			return *ptr;
+			return static_cast<char32_t>(*ptr);
 		}
  
 		// calculate length based on first 5 bits
